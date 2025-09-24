@@ -1,10 +1,9 @@
 # .github/workflows/static.yml
 name: Build and deploy to GitHub Pages
 
-# Trigger on pushes to master (you currently use master)
 on:
   push:
-    branches: ["master"]
+    branches: ["master"]   # your repo uses master
   workflow_dispatch:
 
 permissions:
@@ -31,7 +30,6 @@ jobs:
 
       - name: Cache npm
         uses: actions/cache@v4
-        id: npm-cache
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -45,6 +43,7 @@ jobs:
         run: npm run build
 
       - name: Upload artifact for GitHub Pages
+        # <<-- Use the Pages-specific upload action (v1), NOT upload-artifact@v3
         uses: actions/upload-pages-artifact@v1
         with:
           path: ./dist
