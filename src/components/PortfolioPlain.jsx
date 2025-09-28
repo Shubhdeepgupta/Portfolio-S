@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import "./portfolio-plain.css";
 import { Github, Linkedin, Mail, Sun, Moon } from "lucide-react";
@@ -67,71 +66,66 @@ export default function PortfolioPlain() {
     "CI/CD / Docker",
   ];
 
-
   useEffect(() => {
-  // add subtle shadow when scrolling
-  const header = document.querySelector(".pp-header");
-  if (!header) return;
-  const onScroll = () => header.classList.toggle("sticky-shadow", window.scrollY > 8);
-  window.addEventListener("scroll", onScroll, { passive: true });
-  return () => window.removeEventListener("scroll", onScroll);
-}, []);
+    // add subtle shadow when scrolling
+    const header = document.querySelector(".pp-header");
+    if (!header) return;
+    const onScroll = () => header.classList.toggle("sticky-shadow", window.scrollY > 8);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
-
-
-
-
-
+  // Vite-friendly base path support (works in dev and GitHub Pages production)
+  const base =
+    typeof import.meta !== "undefined" && import.meta.env
+      ? import.meta.env.BASE_URL || "/"
+      : "/";
 
   return (
     <div className={`pp-root ${dark ? "dark" : ""}`}>
+      {/* Skip link for keyboard users */}
+      <a href="#main-content" className="sr-only focus:not-sr-only pp-skip">
+        Skip to content
+      </a>
+
       {/* Header */}
+      <header className="pp-header">
+        <div className="pp-brand">{/* logo area (optional) */}</div>
 
+        <nav className="pp-nav" aria-label="Primary">
+          <a href="#projects">Projects</a> 
+          <a href="#skills">Skills</a>
+          <a href="#about">About</a>
+          <a href="#contact">Contact</a>
+          <a href="https://github.com/" aria-label="Github" title="Github" className="pp-icon-link">
+            <Github size={18} />
+          </a>
+          <a href="https://www.linkedin.com/in/sakshipasalkar/" aria-label="LinkedIn" title="LinkedIn" className="pp-icon-link">
+            <Linkedin size={18} />
+          </a>
+        </nav>
 
-<header className="pp-header">
-  <div className="pp-brand">
-    {/* <div className="pp-logo" aria-hidden="true">
-      SD
-    </div>
-    <div>
-      <div className="pp-name" style={{ fontSize: "16px" }}>Shubhdeep Gupta</div>
-      <div className="pp-sub" style={{ fontSize: "13px" }}>Frontend Developer • UI / UX Enthusiast</div>
-    </div> */}
-  </div>
-
-  <nav className="pp-nav" aria-label="Primary">
-    <a href="#projects">Projects</a>
-    <a href="#skills">Skills</a>
-    <a href="#about">About</a>
-    <a href="#contact">Contact</a>
-    <a href="https://github.com/" aria-label="Github" title="Github" className="pp-icon-link">
-      <Github size={18} />
-    </a>
-    <a href="https://linkedin.com/" aria-label="LinkedIn" title="LinkedIn" className="pp-icon-link">
-      <Linkedin size={18} />
-    </a>
-  </nav>
-
-  {/* Theme toggle */}
-  <button
-    onClick={() => setDark((s) => !s)}
-    className="pp-btn ghost small-toggle"
-    aria-label="Toggle theme"
-    title="Toggle theme"
-    style={{ padding: "8px 10px" }}
-  >
-    {dark ? <Sun size={18} /> : <Moon size={18} />}
-  </button>
-</header>
+        {/* Theme toggle */}
+        <button
+          onClick={() => setDark((s) => !s)}
+          className="pp-btn ghost small-toggle"
+          aria-label="Toggle theme"
+          title="Toggle theme"
+          style={{ padding: "8px 10px" }}
+        >
+          {dark ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+      </header>
 
       {/* Hero */}
-      <main className="pp-main">
+      <main className="pp-main" id="main-content">
         <section className="pp-hero">
           <div className="pp-hero-left">
-            <div className="pp-pill">Open to work • Available for contract & full-time</div>
+            
             <h1>
               Hi, I am <span className="pp-highlight">Sakshi Pasalkar</span>
             </h1>
+            <div className="pp-pill">Open to work • Available for contract & full-time</div>
             <p className="pp-lead">
               A DevOps Engineer & Senior Technical Specialist who deals with automation, cloud,
               and system optimization — leveraging modern tools and practices to streamline workflows,
@@ -151,16 +145,31 @@ export default function PortfolioPlain() {
             <div
               className="pp-photo-card pp-portrait-card"
               role="img"
-              aria-label="Photo of Sakshi Pasalkar"
+              aria-label="Portrait of Sakshi Pasalkar"
             >
-              <img
-                src="/images/me.jpg"
-                alt="Sakshi Pasalkar"
-                className="pp-portrait-large"
-                loading="eager"
-                width="560"
-                height="700"
-              />
+              {/* responsive picture (uses BASE_URL so it works on GitHub Pages too) */}
+              <picture>
+                <source
+                  type="image/webp"
+                  srcSet={`${base}images/me-320.webp 320w, ${base}images/me-800.webp 800w, ${base}images/me-1200.webp 1200w`}
+                  sizes="(max-width: 600px) 100vw, 320px"
+                />
+                <source
+                  type="image/jpeg"
+                  srcSet={`${base}images/me-320.jpg 320w, ${base}images/me-800.jpg 800w, ${base}images/me-1200.jpg 1200w`}
+                  sizes="(max-width: 600px) 100vw, 320px"
+                />
+                <img
+                  src={`${base}images/me-800.jpg`}
+                  alt="Portrait of Sakshi Pasalkar — DevOps & Technical Specialist"
+                  className="pp-portrait-large"
+                  width={320}
+                  height={400}
+                  loading="eager"
+                  decoding="async"
+                  style={{ display: "block", maxWidth: "100%", height: "auto" }}
+                />
+              </picture>
             </div>
           </div>
         </section>
@@ -170,7 +179,11 @@ export default function PortfolioPlain() {
           <h2>Projects</h2>
           <div className="pp-grid">
             {projects.map((p) => (
-              <article key={p.title} className="pp-card" aria-labelledby={`proj-${p.title.replace(/\s+/g, "-")}`}>
+              <article
+                key={p.title}
+                className="pp-card"
+                aria-labelledby={`proj-${p.title.replace(/\s+/g, "-")}`}
+              >
                 <img src={p.img} alt={`${p.title} screenshot`} className="pp-card-img" />
                 <div className="pp-card-body">
                   <div className="pp-card-top">
@@ -187,8 +200,8 @@ export default function PortfolioPlain() {
                   </div>
 
                   <div className="pp-card-actions">
-                    <a className="pp-link" href={p.demo} target="_blank" rel="noreferrer">Live</a>
-                    <a className="pp-link" href={p.repo} target="_blank" rel="noreferrer">Code</a>
+                    <a className="pp-link" href={p.demo} target="_blank" rel="noopener noreferrer">Live</a>
+                    <a className="pp-link" href={p.repo} target="_blank" rel="noopener noreferrer">Code</a>
                   </div>
                 </div>
               </article>
@@ -282,6 +295,3 @@ export default function PortfolioPlain() {
     </div>
   );
 }
-
-
-

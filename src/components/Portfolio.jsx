@@ -1,19 +1,17 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { Suspense, lazy } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   Github,
   Linkedin,
   Mail,
   Codepen,
   Menu,
-  X,
   Briefcase,
   Sparkles,
 } from "lucide-react";
 
-// Modern single-file portfolio component
-// Usage: place this file in a React app (Vite / Create React App / Next.js page)
-// Requirements: tailwindcss, framer-motion, lucide-react installed and configured.
+// Lazy-load heavy hero previews to reduce initial bundle
+const HeroPreview = lazy(() => import("./components/HeroPreview"));
 
 export default function Portfolio() {
   const projects = [
@@ -49,59 +47,71 @@ export default function Portfolio() {
     "CI/CD / Docker",
   ];
 
+  // Respect user's prefer-reduced-motion setting
+  const reduceMotion = useReducedMotion();
+
+  // Centralized variants (uses the reduced-motion preference)
+  const fadeUpVariant = {
+    hidden: { opacity: 0, y: 12 },
+    show: (i = 0) => ({
+      opacity: 1,
+      y: 0,
+      transition: { delay: i * 0.06, duration: reduceMotion ? 0.01 : 0.42, ease: "easeOut" },
+    }),
+  };
+
+  const hoverLiftProps = reduceMotion
+    ? {}
+    : { whileHover: { y: -6, scale: 1.01 }, transition: { type: "spring", stiffness: 200, damping: 18 } };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-900 via-indigo-900 to-sky-900 text-slate-100 antialiased">
       {/* Top navigation */}
+      <header className="sticky top-0 z-40 backdrop-blur-md bg-white/5 border-b border-white/6">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <motion.div
+            initial={{ x: -50, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 90 }}
+            className="flex items-center gap-3"
+          >
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-500 to-yellow-400 flex items-center justify-center text-black font-bold">SD</div>
+            <div>
+              <div className="text-sm font-semibold">Shubhdeep Gupta</div>
+              <div className="text-xs text-slate-300">Frontend Developer • UI / UX Enthusiast</div>
+            </div>
+          </motion.div>
 
+          <nav className="hidden md:flex gap-6 items-center text-sm">
+            <a href="#projects" className="hover:underline">Projects</a>
+            <a href="#skills" className="hover:underline">Skills</a>
+            <a href="#about" className="hover:underline">About</a>
+            <a href="#contact" className="hover:underline">Contact</a>
+            <div className="flex gap-3 items-center">
+              <a href="#" aria-label="Github" title="Github">
+                <Github size={18} />
+              </a>
+              <a href="#" aria-label="LinkedIn" title="LinkedIn">
+                <Linkedin size={18} />
+              </a>
+            </div>
+          </nav>
 
-<header className="sticky top-0 z-50 backdrop-blur-md bg-white/6 border-b border-white/8">
-  <div className="max-w-6xl mx-auto px-6 py-5 md:py-6 flex items-center justify-between">
-    <motion.div
-      initial={{ x: -50, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 90 }}
-      className="flex items-center gap-4"
-    >
-      <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-tr from-pink-500 to-yellow-400 flex items-center justify-center text-black font-bold text-lg md:text-xl">
-        SD
-      </div>
-      <div className="hidden md:block">
-        <div className="text-sm md:text-base font-semibold">Shubhdeep Gupta</div>
-        <div className="text-xs md:text-sm text-slate-300">Frontend Developer • UI / UX Enthusiast</div>
-      </div>
-    </motion.div>
+          {/* mobile menu icon */}
+          <div className="md:hidden">
+            <Menu size={20} />
+          </div>
+        </div>
+      </header>
 
-    <nav className="hidden md:flex gap-8 items-center text-sm md:text-base">
-      <a href="#projects" className="hover:underline py-2 px-3">Projects</a>
-      <a href="#skills" className="hover:underline py-2 px-3">Skills</a>
-      <a href="#about" className="hover:underline py-2 px-3">About</a>
-      <a href="#contact" className="hover:underline py-2 px-3">Contact</a>
-      <div className="flex gap-4 items-center ml-2">
-        <a href="#" aria-label="Github" title="Github" className="p-2 rounded-md hover:bg-white/6">
-          <Github size={20} />
-        </a>
-        <a href="#" aria-label="LinkedIn" title="LinkedIn" className="p-2 rounded-md hover:bg-white/6">
-          <Linkedin size={20} />
-        </a>
-      </div>
-    </nav>
-
-    {/* mobile menu icon */}
-    <div className="md:hidden flex items-center gap-3">
-      <button className="p-2 rounded-md border border-white/8 bg-white/3">
-        <Menu size={22} />
-      </button>
-    </div>
-  </div>
-</header>
-
-      <main className="max-w-6xl mx-auto px-6 py-12">
+      <main className="max-w-6xl mx-auto px-6 py-12" id="main-content">
         {/* Hero */}
         <section className="grid md:grid-cols-2 gap-8 items-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
+            initial="hidden"
+            animate="show"
+            variants={fadeUpVariant}
+            custom={0}
             className="space-y-6"
           >
             <div className="inline-flex items-center gap-3 px-3 py-1 rounded-full bg-white/6 w-max">
@@ -141,31 +151,10 @@ export default function Portfolio() {
             </div>
           </motion.div>
 
-          {/* Hero visual */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.12 }}
-            className="relative"
-          >
-            <div className="w-full h-72 md:h-96 rounded-2xl bg-gradient-to-tr from-white/6 to-white/3 border border-white/5 p-6 backdrop-blur-sm">
-              {/* Example animated cards */}
-              <div className="flex gap-4">
-                <motion.div whileHover={{ y: -8 }} className="flex-1 bg-white/4 p-4 rounded-xl">
-                  <div className="h-36 rounded-lg bg-gradient-to-br from-indigo-500/30 to-sky-500/20 flex items-center justify-center">Project Preview</div>
-                </motion.div>
-                <motion.div whileHover={{ y: -8 }} className="w-48 bg-white/4 p-4 rounded-xl">
-                  <div className="h-36 rounded-lg bg-gradient-to-br from-pink-400/30 to-yellow-400/10 flex items-center justify-center">UI Snippet</div>
-                </motion.div>
-              </div>
-
-              <div className="mt-4 text-xs text-slate-400">Interactive previews showcase animations and micro-interactions.</div>
-            </div>
-
-            {/* subtle floating blobs */}
-            <div className="pointer-events-none absolute -right-8 -top-8 opacity-30 blur-2xl w-48 h-48 rounded-full bg-gradient-to-br from-pink-500 to-yellow-400 mix-blend-screen" />
-            <div className="pointer-events-none absolute -left-16 -bottom-8 opacity-20 blur-3xl w-56 h-56 rounded-full bg-gradient-to-br from-sky-400 to-indigo-500 mix-blend-screen" />
-          </motion.div>
+          {/* Hero visual (lazy-loaded to keep initial bundle light) */}
+          <Suspense fallback={<div style={{ minHeight: 260 }} aria-hidden="true" />}>
+            <HeroPreview reduceMotion={reduceMotion} />
+          </Suspense>
         </section>
 
         {/* Projects */}
@@ -178,11 +167,12 @@ export default function Portfolio() {
             {projects.map((p, i) => (
               <motion.article
                 key={p.title}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 * i }}
-                whileHover={{ scale: 1.02 }}
-                className="group bg-white/4 rounded-2xl p-5 border border-white/6 shadow-md"
+                custom={i}
+                variants={fadeUpVariant}
+                initial="hidden"
+                animate="show"
+                {...hoverLiftProps}
+                className="group bg-white/4 rounded-2xl p-5 border border-white/6 shadow-md will-change-transform"
               >
                 <div className="flex items-start justify-between">
                   <div>

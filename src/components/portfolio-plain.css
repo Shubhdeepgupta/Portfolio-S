@@ -34,8 +34,6 @@
   }
 }
 
-
-
 /* dark theme overrides: apply by adding 'dark' to .pp-root */
 .pp-root.dark {
   --bg: #071025;
@@ -55,28 +53,51 @@
 html, body, #root { height: 100%; margin: 0; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; }
 body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
+/* accessibility helper */
+.sr-only {
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  border: 0; padding: 0; margin: -1px;
+}
+
 /* page root */
 .pp-root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  background: linear-gradient(180deg, var(--bg), rgba(0,0,0,0.02));
   color: var(--text);
   transition: background var(--transition-medium) ease, color var(--transition-medium) ease;
+  /* enhanced background: subtle radial accents + gradient that respects theme */
+  background-image:
+    radial-gradient(circle at 8% 12%, rgba(6,182,212,0.04), transparent 6%),
+    radial-gradient(circle at 92% 88%, rgba(67,56,202,0.04), transparent 10%),
+    linear-gradient(180deg, var(--bg), rgba(0,0,0,0.02));
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
-/* ============================
-   UPDATED HEADER / NAV STYLES
-   ============================ */
+/* dark-mode background tweak for contrast */
+.pp-root.dark {
+  background-image:
+    radial-gradient(circle at 8% 12%, rgba(6,182,212,0.06), transparent 8%),
+    radial-gradient(circle at 92% 88%, rgba(124,58,237,0.05), transparent 12%),
+    linear-gradient(180deg, var(--bg), rgba(2,6,23,0.06));
+}
 
-/* header */
+/* =========================
+   HEADER / NAV
+   ========================= */
+
 .pp-header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:22px 32px;
-  background:transparent;
+  padding:18px 28px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   border-bottom:1px solid var(--header-border);
   transition: border-color var(--transition-fast) ease, background var(--transition-fast) ease;
   gap: 12px;
@@ -85,18 +106,16 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 .pp-brand{ display:flex; gap:16px; align-items:center; }
 
 .pp-logo{
-  width:72px; height:72px; border-radius:16px;
+  width:64px; height:64px; border-radius:14px;
   background: linear-gradient(135deg, var(--accent1), var(--accent2));
   color: #fff; display:flex; align-items:center; justify-content:center;
   font-weight:800; font-size:20px; box-shadow: var(--shadow-1);
   flex-shrink: 0;
 }
 
-
 .pp-name{ font-weight:800; font-size:18px; color: var(--text); }
 .pp-sub{ color: var(--muted); font-size:13px; margin-top:2px; }
 .pp-nav{ display:flex; gap:18px; align-items:center; }
-
 
 .pp-nav a{
   color: var(--muted);
@@ -109,16 +128,11 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
   padding:8px 10px;
   border-radius:10px;
 }
-
-
 .pp-nav a:hover{ color: var(--text); background: rgba(99,102,241,0.04); transform: translateY(-2px); transition: all var(--transition-fast) ease; }
 
-
-/* header icon link small style */
 .pp-icon-link { display:inline-flex; align-items:center; justify-content:center; padding:8px; border-radius:8px; color:var(--muted); transition: background var(--transition-fast) ease, transform var(--transition-fast) ease; }
 .pp-icon-link:hover { background: rgba(99,102,241,0.04); color:var(--text); }
 
-/* theme toggle small button (header) */
 .small-toggle {
   padding: 8px 10px;
   margin-left: 12px;
@@ -132,72 +146,98 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
   transition: background var(--transition-fast) ease, border-color var(--transition-fast) ease, transform var(--transition-fast) ease;
   box-shadow: none;
 }
-
-
 .small-toggle:hover { transform: translateY(-2px); box-shadow: var(--shadow-1); }
 
-/* sticky shadow helper (optional) */
 .pp-header.sticky-shadow {
   box-shadow: 0 6px 30px rgba(2,6,23,0.12);
   backdrop-filter: blur(6px);
 }
 
-/* ============================
-   END UPDATED HEADER / NAV
-   ============================ */
+/* =========================
+   MAIN / HERO
+   ========================= */
 
-/* main container */
 .pp-main{
   width:100%;
   max-width:1200px;
-  margin:22px auto;
-  padding:28px;
+  margin:28px auto;
+  padding: 44px 28px;
   transition: background var(--transition-medium) ease, color var(--transition-medium) ease;
 }
 
-/* hero */
+/* fluid hero: left column grows, right column uses a clamped width */
 .pp-hero{
   display:grid;
-  grid-template-columns:1fr 380px;
+  grid-template-columns: 1fr clamp(220px, 22vw, 360px);
   gap:28px;
   align-items:center;
-  position: relative; /* for blobs */
+  position: relative;
 }
-.pp-hero-left{ padding:8px; }
+
+/* left column spacing and max width for comfortable reading */
+.pp-hero-left{
+  padding:8px;
+  max-width: 760px;
+}
+
+/* pill badge */
 .pp-pill{
   display:inline-block;
-  padding:8px 14px;
+  padding:10px 16px;
   border-radius:999px;
-  background: linear-gradient(90deg, rgba(67,56,202,0.08), rgba(6,182,212,0.05));
+  background: linear-gradient(90deg, rgba(67,56,202,0.10), rgba(6,182,212,0.06));
   color: var(--accent1);
-  font-weight:600;
+  font-weight:700;
   font-size:13px;
+  box-shadow: var(--shadow-1);
 }
-.pp-hero-left h1{ font-size:36px; margin:12px 0; line-height:1.03; }
+
+/* responsive hero headline */
+.pp-hero-left h1{
+  margin:10px 0 8px;
+  line-height:1.02;
+  letter-spacing: -0.01em;
+  font-weight:800;
+  /* scales: min 30px -> prefer viewport -> max 56px */
+  font-size: clamp(30px, 6.2vw, 56px);
+}
+
+/* highlight style inside headline */
 .pp-highlight{
   background: linear-gradient(90deg, #c7d2fe, #fff2a8);
   -webkit-background-clip: text; background-clip: text; color: transparent; font-weight:800;
 }
-.pp-lead{ color: var(--muted); max-width:640px; margin-top:6px; font-size:15px; }
 
-/* CTA buttons */
-.pp-cta-row{ margin-top:18px; display:flex; gap:12px; align-items:center; }
+/* lead paragraph: larger & airy */
+.pp-lead{
+  color: var(--muted);
+  margin-top:10px;
+  font-size: clamp(15px, 1.6vw, 18px);
+  line-height: 1.6;
+  max-width: 720px;
+}
+
+/* CTA row — bigger buttons with better touch targets */
+.pp-cta-row{ margin-top:18px; display:flex; gap:14px; align-items:center; }
 .pp-btn{
-  padding:10px 16px; border-radius:12px; text-decoration:none;
-  display:inline-flex; align-items:center; gap:10px; border:none; cursor:pointer; font-weight:600;
+  padding:12px 18px; border-radius:14px; text-decoration:none;
+  display:inline-flex; align-items:center; gap:10px; border:none; cursor:pointer; font-weight:700;
+  font-size:15px;
 }
 .pp-btn.primary{
   background: linear-gradient(90deg, var(--accent1), var(--accent2)); color:#fff;
-  box-shadow: var(--shadow-1); transition: transform var(--transition-fast) ease, box-shadow var(--transition-fast) ease;
+  box-shadow: 0 14px 40px rgba(67,56,202,0.12); transition: transform var(--transition-fast) ease, box-shadow var(--transition-fast) ease;
 }
 .pp-btn.primary:hover{ transform: translateY(-4px); box-shadow: var(--shadow-2); }
 .pp-btn.ghost{ background: var(--surface); border:1px solid var(--card-border); color: var(--text); }
 
 /* meta text */
-.pp-meta{ color: var(--muted); margin-top:14px; font-size:13px; }
+.pp-meta{ color: var(--muted); margin-top:14px; font-size:14px; }
 
-/* hero preview cards (default simple) */
-.pp-hero-right{ display:flex; flex-direction:column; gap:14px; align-items:center; z-index:2; }
+/* hero right: photo card centered */
+.pp-hero-right{ display:flex; align-items:center; justify-content:center; padding-left:6px; z-index:2; }
+
+/* preview cards */
 .pp-preview-card, .pp-snippet-card{
   width:100%; border-radius:14px; padding:18px; border:1px solid var(--card-border);
   box-shadow: var(--shadow-1); display:flex; align-items:center; justify-content:center; color:var(--muted);
@@ -211,80 +251,39 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 .pp-preview-card:hover, .pp-snippet-card:hover{ transform: translateY(-6px); box-shadow: var(--shadow-2); }
 .pp-snippet-card{ height:110px; width:260px; }
 
-/* portrait / snippet card (photo styles) */
+/* portrait / photo card */
 .pp-photo-card {
   position: relative;
   padding: 0;
   overflow: hidden;
-  min-height: 220px;
+  min-height: 240px;
   display: grid;
   place-items: center;
   background: var(--surface);
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid var(--card-border);
   box-shadow: var(--shadow-1);
   transition: transform var(--transition-fast) ease, box-shadow var(--transition-fast) ease;
 }
-.pp-portrait {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+
+/* fluid portrait sizing */
+.pp-portrait-large {
   display: block;
-  aspect-ratio: 4/3;
-  min-height: 180px;
-  max-height: 420px;
-  border-radius: 14px;
-  transform-origin: center;
-  transition: transform 300ms ease, filter 300ms ease;
-}
-.pp-photo-overlay {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 14px;
-  background: linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.36));
-  color: #fff;
-  display:flex;
-  align-items:flex-end;
-  justify-content:flex-start;
-  pointer-events: none;
-}
-.pp-photo-caption {
-  font-weight: 700;
-  font-size: 14px;
-  text-shadow: 0 4px 14px rgba(0,0,0,0.45);
-}
-
-/* small snippet portrait */
-.pp-photo-snippet {
-  position: relative;
-  padding: 0;
-  overflow: hidden;
-  border-radius: 12px;
-  border: 1px solid var(--card-border);
-  box-shadow: var(--shadow-1);
-  min-height: 92px;
-  width: 260px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.98));
-}
-.pp-portrait-small {
   width: 100%;
-  height: 100%;
+  max-width: clamp(200px, 26vw, 340px);
+  height: auto;
   object-fit: cover;
-  display:block;
-  border-radius: 10px;
+  border-radius: 12px;
+  transform-origin: center;
+  transition: transform 220ms ease, filter 220ms ease;
+  will-change: transform, opacity;
+  aspect-ratio: 4 / 5;
 }
 
-/* hover microinteraction */
-.pp-photo-card:hover .pp-portrait {
-  transform: scale(1.03);
-  filter: saturate(1.05);
+/* hover microinteraction (reduced-motion friendly) */
+@media (prefers-reduced-motion: no-preference) {
+  .pp-photo-card:hover .pp-portrait-large { transform: translateY(-4px) scale(1.01); filter: saturate(1.05); }
 }
-.pp-photo-card:active .pp-portrait { transform: scale(0.997); }
 
 /* overlay differences for themes */
 .pp-root.dark .pp-photo-overlay {
@@ -402,8 +401,20 @@ body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 
 /* small visual tweaks for images on very small screens */
 @media (max-width:480px){
-  .pp-card-img { height: 120px; }
-  .pp-hero-right { display:none; }
-  .pp-portrait { max-height: 320px; min-height: 140px; }
-  .pp-photo-snippet { width: 100%; height: 110px; }
+  .pp-hero{ grid-template-columns: 1fr; }
+  .pp-photo-card { min-height: 200px; }
+  .pp-portrait-large { max-width: 100%; height: auto; border-radius: 10px; }
+}
+
+/* Performance / animation hints */
+.will-change-transform { will-change: transform, opacity; }
+
+/* visible focus styles for keyboard users */
+:focus {
+  outline: 3px solid rgba(99,102,241,0.25);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+a:focus, button:focus {
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.08);
 }
